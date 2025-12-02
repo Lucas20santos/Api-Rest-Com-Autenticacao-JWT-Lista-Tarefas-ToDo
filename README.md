@@ -28,3 +28,31 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.8
 dotnet add package Swashbuckle.AspNetCore --version 8.0.8
 # para testes: Moq, FluentAssertions etc (se quiser)
 ```
+
+## 3) Estrutura de pastas recomendada
+
+Dentro do projeto TodoApi, crie:
+
+```bash
+/Controllers
+/Models/Domain
+/Models/DTOs
+/Data
+/Repositories
+/Services
+/Helpers (AutoMapper, JWT settings)
+```
+
+## 4) Models (entidades)
+
+```Models/Domain/User.cs```
+
+```cs
+public class User
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public string Email { get; set; } = null!;
+}
+```
