@@ -21,8 +21,8 @@ dotnet sln add TodoApi.Tests/TodoApi.Tests.csproj
 
 ```bash
 cd TodoApi
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer
-dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.8
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 8.0.8
 dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 dotnet add package Swashbuckle.AspNetCore
