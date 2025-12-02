@@ -23,8 +23,8 @@ dotnet sln add TodoApi.Tests/TodoApi.Tests.csproj
 cd TodoApi
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.8
 dotnet add package Microsoft.EntityFrameworkCore.Design --version 8.0.8
-dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
-dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
-dotnet add package Swashbuckle.AspNetCore
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 8.0.8
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.8
+dotnet add package Swashbuckle.AspNetCore --version 8.0.8
 # para testes: Moq, FluentAssertions etc (se quiser)
 ```
