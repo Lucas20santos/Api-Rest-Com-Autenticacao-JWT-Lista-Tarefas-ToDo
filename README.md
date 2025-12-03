@@ -878,3 +878,28 @@ O EF ainda cria a tabela, mas:
 você não consegue acessar os dados
 
 o EF não sabe que ela faz parte do contexto
+
+## 6) Configuração do banco de dados no Docker
+
+### Baixando a imagem do sqlServer
+
+```bash
+docker pull mcr.microsoft.com/mssql/server:2025-latest
+```
+
+### Verificicando as imagens
+
+```bash
+docker images
+```
+
+### Criação de um usuario e um senha
+
+```bash
+docker run -d \
+    --name mssql_atividades \
+    -p 1433:1433 \
+    -e 'ACCEPT_EULA=Y' \
+    -e 'SA_PASSWORD=SuaSenhaForte123!' \
+    mcr.microsoft.com/mssql/server:2025-latest
+```
