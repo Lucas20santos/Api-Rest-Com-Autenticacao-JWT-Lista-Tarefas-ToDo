@@ -89,7 +89,7 @@ Ou seja: elas representam as tabelas e suas relações.
 
 ### 🔎 Entidade User
 
-#### Detalhando:
+#### Detalhando
 
 - ```public int Id { get; set; }```
   - É a primary key da tabela ```Users```.
@@ -367,7 +367,7 @@ Por padrão:
 
 Exemplo:
 
-```csharp
+```cs
 public DbSet<User> Users { get; set; }
 ```
 
@@ -379,7 +379,7 @@ Users
 
 Se você chamar:
 
-```csharp
+```cs
 public DbSet<TodoItem> TodoItems { get; set; }
 ```
 
@@ -459,7 +459,7 @@ O EF automaticamente entende:
 
 Exemplo:
 
-```csharp
+```cs
 public string? Description { get; set; } 
 ```
 
@@ -495,7 +495,7 @@ Aqui você controla **tabela, coluna, tamanho, relacionamento, chave primária, 
 
 #### ✔ 2.1 — Configurar nome da tabela
 
-```csharp
+```cs
 modelBuilder.Entity<User>()
     .ToTable("Usuarios");
 ```
@@ -504,7 +504,7 @@ modelBuilder.Entity<User>()
 
 #### ✔ 2.2 — Configurar nome da coluna
 
-```csharp
+```cs
 modelBuilder.Entity<User>()
     .Property(u => u.Username)
     .HasColumnName("Login");
@@ -525,7 +525,7 @@ modelBuilder.Entity<User>()
 
 #### ✔ 2.4 — Configurar a chave primária manualmente
 
-```csharp
+```cs
 modelBuilder.Entity<User>()
     .HasKey(u => u.Id);
 ```
@@ -534,7 +534,7 @@ modelBuilder.Entity<User>()
 
 #### ✔ 2.5 — Configurar relacionamento explicitamente
 
-```csharp
+```cs
 modelBuilder.Entity<TodoItem>()
     .HasOne(t => t.User)
     .WithMany()        // ou .WithMany(u => u.TodoItems) se você tivesse uma lista
@@ -546,7 +546,7 @@ modelBuilder.Entity<TodoItem>()
 
 #### ✔ 2.6 — Índice
 
-```csharp
+```cs
 modelBuilder.Entity<User>()
     .HasIndex(u => u.Email)
     .IsUnique();
@@ -556,7 +556,7 @@ modelBuilder.Entity<User>()
 
 #### ✔ 2.7 — Default value no banco
 
-```csharp
+```cs
 modelBuilder.Entity<TodoItem>()
     .Property(t => t.CreatedAt)
     .HasDefaultValueSql("GETUTCDATE()");
@@ -568,7 +568,7 @@ modelBuilder.Entity<TodoItem>()
 
 ### 📌 **Exemplo completo de Fluent API para suas entidades**
 
-```csharp
+```cs
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     modelBuilder.Entity<User>(entity =>
@@ -715,3 +715,166 @@ public class ApplicationDbContext : DbContext
     public DbSet<TodoItem> TodoItems { get; set; }
 }
 ```
+
+### 🔍 1) Imports (using)
+
+```cs
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Models.Domain;
+```
+
+#### ✔ using Microsoft.EntityFrameworkCore
+
+Importa tudo o que você precisa para usar o Entity Framework Core, incluindo:
+
+- DbContext
+- DbSet<>
+- configurações do EF
+- migrations
+- tracking de entidades
+- conexão com o banco
+
+Sem isso, nada relacionado ao EF funciona.
+
+#### ✔ using TodoApi.Models.Domain
+
+Importa seus **modelos (entidades)**:
+
+- User
+- TodoItem
+
+Isso permite que você use DbSet<\User> e DbSet<\TodoItem> dentro do contexto.
+
+### 🔍 2) Definição da classe ApplicationDbContext
+
+```cs
+public class ApplicationDbContext : DbContext
+```
+
+Isso significa:
+
+#### ✔ ApplicationDbContext é a classe de contexto da sua aplicação
+
+Ela é o "cérebro" do EF Core no seu projeto.
+
+#### ✔ Ela herda de DbContext
+
+E herdar de ```DbContext``` dá a ela todas as capacidades de:
+
+- Conectar ao banco
+- Criar tabelas
+- Fazer consultas (LINQ)
+- Adicionar, remover e atualizar dados
+- Controlar transações
+- Mapear entidades
+- Executar migrations
+
+Ou seja: ela é a ponte entre o C# e o SQL Server.
+
+### 🔍 3) Construtor do DbContext
+
+```cs
+public ApplicationDbContext(DbContextOptions<\ApplicationDbContext> options)
+    : base(options) { }
+```
+
+Essa é a parte mais importante da configuração do EF Core.
+
+#### ✔ DbContextOptions<\ApplicationDbContext>
+
+É um objeto que contém todas as configurações feitas em:
+
+```cs
+builder.Services.AddDbContext<\ApplicationDbContext>(options =>
+{
+    options.UseSqlServer("connection-string");
+});
+```
+
+O ```DbContextOptions``` inclui:
+
+- o tipo de banco (SQL Server)
+- a connection string
+- parâmetros como logging
+- opções de lazy loading
+- comportamento de tracking
+
+#### ✔ ```: base(options)```
+
+Passa essas opções para a classe base DbContext.
+
+Se você não fizer isso, o EF não sabe qual banco usar.
+
+#### ✔ Por que o construtor existe?
+
+Porque o EF Core injeta o ```DbContext``` via ```Dependency Injection```.
+
+Ou seja, você pode usar em qualquer controller:
+
+```cs
+private readonly ApplicationDbContext _context;
+
+public UsersController(ApplicationDbContext context)
+{
+    _context = context;
+}
+```
+
+E o ASP.NET Core entrega o contexto prontinho, configurado, conectado ao banco.
+
+### 🔍 4) Os DbSet<\Entidade>
+
+```cs
+public DbSet<\User> Users { get; set; }
+public DbSet<\TodoItem> TodoItems { get; set; }
+```
+
+#### ✔ O que é um DbSet?
+
+Um DbSet<\T> representa uma tabela no banco de dados, onde:
+
+T = o tipo da entidade (classe C#)
+
+DbSet<\T> = a coleção de registros dessa tabela
+
+Exemplo:
+
+|Classe C# | DbSet| Tabela no SQL|
+|----------|------|--------------|
+|User|Users|Users|
+|TodoItem  |TodoItems| TodoItems|
+
+#### ✔ O que o EF faz com isso?
+
+1. Lê as propriedades da entidade
+2. Gera as colunas
+3. Entende o tipo da tabela
+4. Entende quando criar relacionamentos
+5. Permite consultas como:
+
+```cs
+var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+```
+
+Ou inserir:
+
+```cs
+_context.Users.Add(newUser);
+_context.SaveChanges();
+```
+
+Ou deletar:
+
+```cs
+_context.TodoItems.Remove(todo);
+```
+
+#### ✔ Sem o DbSet, a tabela ainda pode existir?
+
+Sim — mas ```você não consegue queryar``` usando LINQ.
+
+O EF ainda cria a tabela, mas:
+
+você não consegue acessar os dados
+
+o EF não sabe que ela faz parte do contexto
