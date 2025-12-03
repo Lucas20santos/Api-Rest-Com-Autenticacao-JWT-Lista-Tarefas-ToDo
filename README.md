@@ -2,6 +2,27 @@
 
 API REST (ToDo) usando .NET 8, EF Core (Code First), SQL Server via Docker e autenticação JWT
 
+## Aqui vai o sumário
+
+## Arvore do projeto
+
+```md
+TodoApi/
+│
+├── Controllers/
+├── Data/
+├── Models/
+│   ├── Domain/
+│   └── DTOs/
+├── Repositories/
+├── Services/
+├── Helpers/
+│   ├── AutoMapperProfiles.cs
+│   ├── JwtService.cs
+│   └── JwtSettings.cs
+└── Program.cs
+```
+
 ## 1) Criar solução e projeto Web API
 
 ```bash
