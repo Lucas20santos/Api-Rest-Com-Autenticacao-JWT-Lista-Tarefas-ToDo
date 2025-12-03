@@ -10,11 +10,16 @@ API REST (ToDo) usando .NET 8, EF Core (Code First), SQL Server via Docker e aut
 TodoApi/
 │
 ├── Controllers/
+│   ├── Arquivo.cs
+│   └── Arquivo.cs
 ├── Data/
+│   └── Arquivo.cs
 ├── Models/
-│   ├── Domain/
-│   └── DTOs/
+│   └── Domain/
+│      ├── User.cs
+│      └── TodoItem.cs
 ├── Repositories/
+│    └── ApplicationDbContext.cs
 ├── Services/
 ├── Helpers/
 │   ├── AutoMapperProfiles.cs

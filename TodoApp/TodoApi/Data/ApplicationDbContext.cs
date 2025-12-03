@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TodoApi.Data
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Models.Domain;
+public class ApplicationDbContext : DbContext
 {
-    public class ApplicationDbContext
-    {
-        
-    }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options) { }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<TodoItem> TodoItems { get; set; }
 }
