@@ -924,3 +924,237 @@ docker run -d \
 |--hostname sql1| Usado para definir explicitamente o nome do host do contêiner. Se você não especificar o nome do host, o padrão será a ID do contêiner, que é um GUID do sistema gerado aleatoriamente.|
 |-d|Execute o contêiner em segundo plano (daemon).|
 |mcr.microsoft.com/mssql/server:2025-latest| A imagem de contêiner do SQL Server Linux.|
+
+## 7) Configuração da String de Conexao no arquivo appsettings.Development.json ou no arquivo appsettings.json
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+     "ConexaoPadrao": "Server=localhost,1433; Initial Catalog=Atividades; User Id=SA; Password=SuaSenhaForte123!; TrustServerCertificate=True; MultipleActiveResultSets=True"
+  }
+}
+```
+
+Vamos por partes, de forma **simples, direta e aprofundada**.
+
+---
+
+### 📌 O que é isso?
+
+```json
+"ConnectionStrings": {
+  "ConexaoPadrao": "Server=localhost,1433; Initial Catalog=Atividades; User Id=SA; Password=SuaSenhaForte123!; TrustServerCertificate=True; MultipleActiveResultSets=True"
+}
+```
+
+Isso é uma **string de conexão** usada pelo Entity Framework Core para se conectar ao banco de dados **SQL Server**.
+
+Ela fica no `appsettings.json` ou no `appsettings.Development.json`.
+
+---
+
+### 📌 Explicando **cada parte** da string
+
+Vou quebrar a string inteira e explicar:
+
+```json
+Server=localhost,1433;
+```
+
+#### 🔹 **Server=localhost,1433**
+
+- Diz qual servidor SQL Server conectar.
+- `localhost` significa que o banco está rodando **na sua própria máquina**.
+- `1433` é a porta padrão do SQL Server em contêiner Docker.
+
+📌 **No seu caso** → provavelmente você está rodando o SQL Server no Docker.
+
+---
+
+```json
+Initial Catalog=Atividades;
+```
+
+#### 🔹 **Initial Catalog=Atividades**
+
+- Especifica **qual banco de dados** será usado.
+- Aqui o nome é **Atividades**.
+
+Se esse banco não existir, você pode criá-lo via migrations.
+
+---
+
+```json
+User Id=SA;
+Password=SuaSenhaForte123!;
+```
+
+#### 🔹 **User Id e Password**
+
+Credenciais para conectar no SQL Server:
+
+- **SA** é o administrador padrão do SQL Server.
+- A senha deve seguir regras de segurança (mínimo, caracteres especiais etc).
+
+---
+
+```json
+TrustServerCertificate=True;
+```
+
+#### 🔹 **TrustServerCertificate=True**
+
+Isso diz ao cliente SQL:
+
+> “Aceite o certificado SSL mesmo que ele não seja confiável.”
+
+Por quê?
+
+- No Docker, o SQL Server usa certificados **autoassinados**.
+- Sem isso, a conexão **não funciona** sem configurar certificados manualmente.
+
+---
+
+```json
+MultipleActiveResultSets=True
+```
+
+#### 🔹 **MARS — Multiple Active Result Sets**
+
+Permite que você execute **mais de uma consulta ao mesmo tempo** na mesma conexão.
+
+Exemplo:
+
+- Ler dados de uma tabela
+- E ao mesmo tempo fazer outra query dentro do loop
+
+Sem quebrar a conexão.
+
+É raro precisar, mas muitos templates deixam isso ativado.
+
+---
+
+### 📌 Resumão em português simples
+
+Essa linha:
+
+```json
+Server=localhost,1433; Initial Catalog=Atividades; User Id=SA; Password=SuaSenhaForte123!; TrustServerCertificate=True; MultipleActiveResultSets=True
+```
+
+Significa:
+
+> “Conecte-se ao SQL Server rodando localmente na porta 1433, use o banco Atividades, logue como SA com essa senha, aceite o certificado inseguro e permita múltiplas consultas simultâneas.”
+
+---
+
+### 📌 Onde isso é usado?
+
+No `Program.cs`:
+
+```cs
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
+```
+
+Ou seja:
+
+- O EF Core pega essa string
+- Conecta ao SQL Server
+- Cria tabelas
+- Roda migrations
+- Faz CRUD
+
+---
+
+## 8) Configurando o arquivo Program.cs
+
+Adicione as Linhas que tem um comentário `Add Line`
+
+```cs
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Repositories;
+using Microsoft.Extensions.Options;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Add Line
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao"))
+);
+
+// Add Line
+builder.Services.AddControllers();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+// Add Line
+app.MapControllers();
+
+var summaries = new[]
+{
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast =  Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast")
+.WithOpenApi();
+
+app.Run();
+
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+```
+
+## 9) Migrations
+
+### Instalando o Entity Framework globalmente
+
+```bash
+dotnet tool install --global dotnet-ef --version 8.0.6
+```
+
+### ✅ Próximo passo: criar a primeira migration
+
+```bash
+dotnet ef migrations add InitialCreate
+```
+
+### ✅ Depois: aplicar no banco
+
+```bash
+dotnet ef database update
+```
