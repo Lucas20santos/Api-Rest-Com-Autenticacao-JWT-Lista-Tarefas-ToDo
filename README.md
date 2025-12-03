@@ -903,3 +903,24 @@ docker run -d \
     -e 'SA_PASSWORD=SuaSenhaForte123!' \
     mcr.microsoft.com/mssql/server:2025-latest
 ```
+
+### Iniciando ou parando um container
+
+```bash
+  docker start mssql_agenda
+
+  docker stop mssql_agenda
+```
+
+### Explicação do comando acima retirada da documentação
+
+|Parâmetro|Descrição|
+|---------|----------|
+|-e "ACCEPT_EULA=Y"| Defina a variável ACCEPT_EULA com qualquer valor para confirmar sua aceitação do Contrato de Licença do Usuário Final. Configuração exigida para a imagem do SQL Server.|
+|-e "MSSQL_SA_PASSWORD=<\password>"|Especifique sua própria senha forte que tenha pelo menos oito caracteres e atenda à Política de senha. Configuração exigida para a imagem do SQL Server.|
+|-e "MSSQL_COLLATION=<SQL_Server_collation>"|Especifique uma ordenação personalizada do SQL Server, em vez do padrão SQL_Latin1_General_CP1_CI_AS.|
+|-p 1433:1433|Mapeie uma porta TCP no ambiente do host (primeiro valor) para uma porta TCP no contêiner (segundo valor). Neste exemplo, o SQL Server está escutando na TCP 1433 no contêiner e essa porta de contêiner é exposta para a porta TCP 1433 no host.|
+|--name sql1|Especifique um nome personalizado para o contêiner em vez de um nome gerado aleatoriamente. Se você executar mais de um contêiner, não será possível reutilizar esse mesmo nome.|
+|--hostname sql1| Usado para definir explicitamente o nome do host do contêiner. Se você não especificar o nome do host, o padrão será a ID do contêiner, que é um GUID do sistema gerado aleatoriamente.|
+|-d|Execute o contêiner em segundo plano (daemon).|
+|mcr.microsoft.com/mssql/server:2025-latest| A imagem de contêiner do SQL Server Linux.|
