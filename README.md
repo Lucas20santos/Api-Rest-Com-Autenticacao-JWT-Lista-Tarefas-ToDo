@@ -1184,3 +1184,54 @@ dotnet ef migrations add InitialCreate
 ```bash
 dotnet ef database update
 ```
+
+## Models/DTOs
+
+A pasta **Models/DTOs/** serve para armazenar **DTOs (Data Transfer Objects)** — objetos criados **exclusivamente para troca de dados entre cliente e servidor**, ou entre camadas internas da aplicação.
+
+Eles **não são entidades do banco** e **não devem ser mapeados pelo Entity Framework**.
+São usados apenas para entrada e saída de dados.
+
+`Models/DTOs/RegisterDto.cs`
+
+```cs
+public class RegisterDto
+{
+    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
+}
+```
+
+`Models/DTOs/LoginDto.cs`
+
+```cs
+public class LoginDto
+{
+    public string Username { get; set; } = null!;
+    public string Password { get; set; } = null!;
+}
+```
+
+`Models/DTOs/TodoDto.cs` (para criação/edição)
+
+```cs
+public class TodoDto
+{
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+}
+```
+
+`Models/DTOs/TodoReadDto.cs`
+
+```cs
+public class TodoReadDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+    public bool IsCompleted { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+```
