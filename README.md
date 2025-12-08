@@ -1185,7 +1185,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-## Models/DTOs
+## 10) Models/DTOs
 
 A pasta **Models/DTOs/** serve para armazenar **DTOs (Data Transfer Objects)** — objetos criados **exclusivamente para troca de dados entre cliente e servidor**, ou entre camadas internas da aplicação.
 
@@ -1331,3 +1331,32 @@ public class TodoReadDto
 - Você só retorna os dados que podem ser públicos.
 - Evita expor UserId, ou objetos de navegação (User).
 - É comum ter DTOs diferentes para entrada e saída.
+
+## 11) Repositórios (interface mínima)
+
+`Repositories/IUserRepository.cs`
+
+```cs
+public interface IUserRepository
+{
+    Task<User?> GetByUsernameAsync(string username);
+    Task AddAsync(User user);
+    Task SaveChangesAsync();
+}
+```
+
+`Repositories/ITodoRepository.cs`
+
+```cs
+public interface ITodoRepository
+{
+    Task<IEnumerable<TodoItem>> GetAllForUserAsync(int userId);
+    Task<TodoItem?> GetByIdAsync(int id);
+    Task AddAsync(TodoItem item);
+    Task UpdateAsync(TodoItem item);
+    Task DeleteAsync(TodoItem item);
+    Task SaveChangesAsync();
+}
+```
+
+Implemente usando ApplicationDbContext — padrões simples: AddAsync, FindAsync, ToListAsync etc.
