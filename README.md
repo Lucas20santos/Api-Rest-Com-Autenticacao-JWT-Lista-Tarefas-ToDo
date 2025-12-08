@@ -1192,6 +1192,65 @@ A pasta **Models/DTOs/** serve para armazenar **DTOs (Data Transfer Objects)** �
 Eles **não são entidades do banco** e **não devem ser mapeados pelo Entity Framework**.
 São usados apenas para entrada e saída de dados.
 
+### ✅ Por que existem DTOs?
+
+Porque você nunca expõe suas entidades diretamente.
+Motivos principais:
+
+#### ✔ 1. Segurança
+
+Se você retornar esse objeto na API,
+
+➡️ vai expor o PasswordHash!
+
+O que seria um enorme problema.
+
+Com um DTO você retorna só o necessário.
+
+#### ✔ 2. Evitar overposting (usuário enviar campos que não deveria)
+
+Se você usar a entidade diretamente, alguém pode enviar:
+
+IsCompleted = true para marcar concluído sem permissão
+
+UserId de outro usuário (!)
+
+Com DTO você controla EXATAMENTE o que pode receber:
+
+#### ✔ 3. Separação entre regras internas e o que é exposto na API
+
+A API tem formatos diferentes dos modelos internos.
+
+#### ✔ 4. Flexibilidade de versões da API
+
+### 🔶 Estrutura comum em APIs
+
+```rust
+Models/
+   Domain/   -> Entidades do banco (EF Core)
+   DTOs/     -> Objetos de entrada/saída da API
+```
+
+Exemplo de três DTOs comuns:
+
+- CreateTodoDto.cs
+- UpdateTodoDto.cs
+- TodoResponseDto.cs
+
+### ✅ 1) RegisterDto — usado para registrar usuário
+
+#### Para que serve\?
+
+👉 É o DTO que o cliente envia quando quer criar uma conta.
+
+Ele não retorna para o usuário, só chega na API.
+
+#### Por que é necessário\?
+
+- Você nunca expõe PasswordHash.
+- Você recebe apenas os campos necessários para criar o usuário.
+- Garante que o cliente não envie dados proibidos (Id, Claims, Roles etc.).
+
 `Models/DTOs/RegisterDto.cs`
 
 ```cs
@@ -1203,6 +1262,17 @@ public class RegisterDto
 }
 ```
 
+### ✅ 2) LoginDto — usado para autenticação
+
+#### Para que serve?
+
+👉 O usuário envia esses dados para gerar o token JWT.
+
+#### Por que é necessário?
+
+- Recebe apenas o mínimo para autenticar.
+- Não mistura com o modelo de domínio User.
+
 `Models/DTOs/LoginDto.cs`
 
 ```cs
@@ -1213,6 +1283,20 @@ public class LoginDto
 }
 ```
 
+### ✅ 3) TodoDto — usado para criar e editar uma tarefa
+
+#### Para que serve ?
+
+👉 É usado no POST (criação) e PUT/PATCH (edição).
+
+#### Por que é necessário ?
+
+O usuário não pode enviar Id, CreatedAt, IsCompleted, UserId.
+
+Evita overposting.
+
+Permite validação independente da entidade de banco.
+
 `Models/DTOs/TodoDto.cs` (para criação/edição)
 
 ```cs
@@ -1222,6 +1306,8 @@ public class TodoDto
     public string? Description { get; set; }
 }
 ```
+
+### ✅ 4) TodoReadDto — usado para resposta da API
 
 `Models/DTOs/TodoReadDto.cs`
 
@@ -1235,3 +1321,13 @@ public class TodoReadDto
     public DateTime CreatedAt { get; set; }
 }
 ```
+
+#### 4.1) Para que serve?
+
+👉 É o DTO que volta para o cliente quando ele faz GET.
+
+#### 4.2) Por que existe?
+
+- Você só retorna os dados que podem ser públicos.
+- Evita expor UserId, ou objetos de navegação (User).
+- É comum ter DTOs diferentes para entrada e saída.
