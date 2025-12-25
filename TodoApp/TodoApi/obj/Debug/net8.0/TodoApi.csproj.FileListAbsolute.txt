@@ -139,3 +139,4 @@
 /workspaces/Api-Rest-Com-Autenticacao-JWT-Lista-Tarefas-ToDo/TodoApp/TodoApi/obj/Debug/net8.0/TodoApi.pdb
 /workspaces/Api-Rest-Com-Autenticacao-JWT-Lista-Tarefas-ToDo/TodoApp/TodoApi/obj/Debug/net8.0/TodoApi.genruntimeconfig.cache
 /workspaces/Api-Rest-Com-Autenticacao-JWT-Lista-Tarefas-ToDo/TodoApp/TodoApi/obj/Debug/net8.0/ref/TodoApi.dll
+/workspaces/Api-Rest-Com-Autenticacao-JWT-Lista-Tarefas-ToDo/TodoApp/TodoApi/bin/Debug/net8.0/BCrypt.Net-Next.dll
