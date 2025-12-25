@@ -12,6 +12,7 @@ namespace TodoApi.Services
         public AuthService(IUserRepository userRepo, IJwtService jwtService)
         {
             _userRepo = userRepo;
+            _jwtService = jwtService;
         }
         public async Task RegisterAsync(RegisterDto dto)
         {
