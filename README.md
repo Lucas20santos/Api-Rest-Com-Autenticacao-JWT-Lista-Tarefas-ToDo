@@ -1496,3 +1496,31 @@ public class JwtService : IJwtService
 ```
 
 Registre IJwtService com DI.
+
+## 15) Configurar autenticação JWT no Program.cs
+
+`No Program.cs adicione`:
+
+```cs
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwt = builder.Configuration.GetSection("JwtSettings");
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwt["Issuer"],
+        ValidAudience = jwt["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Secret"]))
+    };
+});
+```
+
+E certifique-se de chamar: app.UseAuthentication(); app.UseAuthorization();

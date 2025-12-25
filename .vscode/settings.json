@@ -15,6 +15,22 @@
             "driver": "MSSQL",
             "name": "atividades",
             "username": "SA"
+        },
+        {
+            "connectionTimeout": 15,
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true,
+                "trustServerCertificate": true
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "Atv1",
+            "username": "SA"
         }
     ]
 }
