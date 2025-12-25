@@ -4,6 +4,6 @@ namespace TodoApi.Services.Interfaces
 {
     public interface IJwtService
     {
-        string GenerationToken(User user);
+        string GenerateToken(User user);
     }
 }

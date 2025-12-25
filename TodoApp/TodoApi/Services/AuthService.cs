@@ -1,9 +1,6 @@
 using TodoApi.Repositories;
 using TodoApi.Services.Interfaces;
 using TodoApi.Models.DTOs;
-using Azure.Identity;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 using TodoApi.Models.Domain;
 
 namespace TodoApi.Services
@@ -12,7 +9,10 @@ namespace TodoApi.Services
     {
         private readonly IUserRepository _userRepo;
         private readonly IJwtService _jwtService; // vamos criar
-        public AuthService(IUserRepository userRepo, IJwtService jwtService) { }
+        public AuthService(IUserRepository userRepo, IJwtService jwtService)
+        {
+            _userRepo = userRepo;
+        }
         public async Task RegisterAsync(RegisterDto dto)
         {
             var existing = await _userRepo.GetByUsernameAsync(dto.Username);
@@ -35,7 +35,7 @@ namespace TodoApi.Services
                 user.PasswordHash))
                 throw new Exception("Credenciais inválidas");
 
-            return _jwtService.GenerationToken(user);
+            return _jwtService.GenerateToken(user);
         }
     }
 }
