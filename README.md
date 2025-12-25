@@ -1400,3 +1400,51 @@ public class AuthService
     }
 }
 ```
+
+## 13) Serviço JWT (gerar token)
+
+Crie configurações em appsettings.json:
+
+```json
+"JwtSettings": {
+  "Issuer": "TodoApi",
+  "Audience": "TodoApiClients",
+  "Secret": "uma-chave-muito-longa-e-secreta-para-dev", 
+  "ExpiresInMinutes": 60
+}
+```
+
+`Helpers/JwtService.cs (esqueleto)`:
+
+```cs
+public class JwtService : IJwtService
+{
+    private readonly IConfiguration _config;
+    public JwtService(IConfiguration config) { _config = config; }
+
+    public string GenerateToken(User user)
+    {
+        var jwt = _config.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Secret"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+            new Claim("uid", user.Id.ToString())
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: jwt["Issuer"],
+            audience: jwt["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(double.Parse(jwt["ExpiresInMinutes"] ?? "60")),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+}
+```
+
+Registre IJwtService com DI.
