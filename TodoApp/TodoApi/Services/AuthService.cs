@@ -27,7 +27,7 @@ namespace TodoApi.Services
                 PasswordHash = hash
             };
             await _userRepo.AddAsync(user);
-            await _userRepo.SaveChangesasync();
+            await _userRepo.SaveChangesAsync();
         }
         public async Task<string> LoginAsync(LoginDto dto)
         {

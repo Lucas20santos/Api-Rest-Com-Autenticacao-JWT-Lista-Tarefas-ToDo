@@ -24,7 +24,7 @@ public class TodoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         int userId = GetUserId();
-        var todos = await _todoRepo.GetAllForuserAsync(userId);
+        var todos = await _todoRepo.GetAllForUserAsync(userId);
 
         var result = todos.Select(t => new TodoReadDto
         {
@@ -37,7 +37,8 @@ public class TodoController : ControllerBase
 
         return Ok(result);
     }
-    public async Task<IActionResult> Create(TodoDto dto)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] TodoDto dto)
     {
         int userId = GetUserId();
 
@@ -90,6 +91,8 @@ public class TodoController : ControllerBase
         var todo = await _todoRepo.GetByIdAsync(id);
 
         if (todo == null || todo.UserId != userId) return NotFound();
+
+        todo.IsCompleted = true;
 
         await _todoRepo.UpdateAsync(todo);
         await _todoRepo.SaveChangesAsync();
