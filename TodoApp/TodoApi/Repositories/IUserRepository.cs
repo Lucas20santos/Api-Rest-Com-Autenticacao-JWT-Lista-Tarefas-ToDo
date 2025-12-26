@@ -10,6 +10,6 @@ namespace TodoApi.Repositories
     {
         Task<User?> GetByUsernameAsync(string username);
         Task AddAsync(User user);
-        Task SaveChangesasync();
+        Task SaveChangesAsync();
     }
 }

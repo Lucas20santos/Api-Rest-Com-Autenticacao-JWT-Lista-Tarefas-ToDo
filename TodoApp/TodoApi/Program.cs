@@ -3,6 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TodoApi.Data;
+using TodoApi.Repositories;
+using TodoApi.Services;
+using TodoApi.Services.Interfaces;
+using TodoApi.Helpers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +16,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao"))
 );
+
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+
+// Services
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>
